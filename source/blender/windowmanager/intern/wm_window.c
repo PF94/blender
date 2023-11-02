@@ -474,14 +474,14 @@ void wm_window_title(wmWindowManager *wm, wmWindow *win)
     if (blendfile_path[0] != '\0') {
       char str[sizeof(((Main *)NULL)->filepath) + 24];
       SNPRINTF(str,
-               "Blender%s [%s%s]",
+               "Blender (Bluffingo's Fork)%s [%s%s]",
                wm->file_saved ? "" : "*",
                blendfile_path,
                G_MAIN->recovered ? " (Recovered)" : "");
       GHOST_SetTitle(win->ghostwin, str);
     }
     else {
-      GHOST_SetTitle(win->ghostwin, "Blender");
+      GHOST_SetTitle(win->ghostwin, "Blender (Bluffingo's Fork)");
     }
 
     /* Informs GHOST of unsaved changes, to set window modified visual indicator (macOS)
