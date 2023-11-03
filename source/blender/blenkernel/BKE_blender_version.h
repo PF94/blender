@@ -19,23 +19,23 @@ extern "C" {
  */
 
 /* Blender major and minor version. */
-#define BLENDER_VERSION 306
+#define BLENDER_VERSION 307
 /* Blender patch version for bugfix releases. */
-#define BLENDER_VERSION_PATCH 5
+#define BLENDER_VERSION_PATCH 0
 /** Blender release cycle stage: alpha/beta/rc/release. */
-#define BLENDER_VERSION_CYCLE release
+#define BLENDER_VERSION_CYCLE alpha
 
 /* Blender file format version. */
 #define BLENDER_FILE_VERSION BLENDER_VERSION
-#define BLENDER_FILE_SUBVERSION 13
+#define BLENDER_FILE_SUBVERSION 0
 
 /* Minimum Blender version that supports reading file written with the current
  * version. Older Blender versions will test this and cancel loading the file, showing a warning to
  * the user.
  *
  * See https://wiki.blender.org/wiki/Process/Compatibility_Handling for details. */
-#define BLENDER_FILE_MIN_VERSION 303
-#define BLENDER_FILE_MIN_SUBVERSION 06
+#define BLENDER_FILE_MIN_VERSION 306
+#define BLENDER_FILE_MIN_SUBVERSION 05
 
 /** User readable version string. */
 const char *BKE_blender_version_string(void);
