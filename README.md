@@ -4,14 +4,12 @@ linking to external resources instead of including content in-line.
 See 'release/text/readme.html' for the end user read-me.
 -->
 
-Blender
+Blender (Bluffingo's Fork)
 =======
 
-Blender is the free and open source 3D creation suite.
-It supports the entirety of the 3D pipeline-modeling, rigging, animation, simulation, rendering, compositing,
-motion tracking and video editing.
+This is a custom version of Blender 3.6 used on Bluffingo's Show Season 4 Episode 2, intended as a stop-gap between 3.6 and 4.0. The original purpose of this fork was to bring the AgX view transform into 3.6.
 
-![Blender screenshot](https://code.blender.org/wp-content/uploads/2018/12/springrg.jpg "Blender screenshot")
+![image](https://github.com/PF94/blender/assets/45898787/dd284cd4-64ad-43fc-adc0-1d83316b59e0)
 
 Project Pages
 -------------
