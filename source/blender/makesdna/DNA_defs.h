@@ -68,6 +68,7 @@
  * Avoids pulling `string.h` from this header to get access to #memcpy. */
 extern "C" void _DNA_internal_memcpy(void *dst, const void *src, size_t size);
 extern "C" void _DNA_internal_memzero(void *dst, size_t size);
+extern "C" void _DNA_internal_swap(void *a, void *b, size_t size);
 
 namespace blender::dna::internal {
 
@@ -142,6 +143,11 @@ template<class T>
 [[nodiscard]] inline internal::ShallowZeroInitializeTag shallow_zero_initialize()
 {
   return internal::ShallowZeroInitializeTag();
+}
+
+template<typename T> inline void shallow_swap(T &a, T &b)
+{
+  _DNA_internal_swap(&a, &b, sizeof(T));
 }
 
 }  // namespace blender::dna
