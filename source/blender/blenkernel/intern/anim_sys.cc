@@ -4125,7 +4125,7 @@ void BKE_animsys_evaluate_all_animation(Main *main, Depsgraph *depsgraph, float 
    * this tagged by Depsgraph on frame-change. This optimization means that objects
    * linked from other (not-visible) scenes will not need their data calculated.
    */
-  EVAL_ANIM_IDS(static_cast<ID *>(main->objects.first), 0);
+  EVAL_ANIM_IDS(static_cast<ID *>(main->objects.first), static_cast<eAnimData_Recalc>(0));
 
   /* masks */
   EVAL_ANIM_IDS(static_cast<ID *>(main->masks.first), ADT_RECALC_ANIM);

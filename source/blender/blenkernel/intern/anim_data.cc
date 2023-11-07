@@ -1213,7 +1213,7 @@ void BKE_animdata_main_cb(Main *bmain, ID_AnimData_Edit_Callback func, void *use
 
   /* standard data version */
 #define ANIMDATA_IDS_CB(first) \
-  for (id = first; id; id = id->next) { \
+  for (id = static_cast<ID *>(first); id; id = static_cast<ID *>(id->next)) { \
     AnimData *adt = BKE_animdata_from_id(id); \
     if (adt) { \
       func(id, adt, user_data); \
@@ -1223,7 +1223,7 @@ void BKE_animdata_main_cb(Main *bmain, ID_AnimData_Edit_Callback func, void *use
 
   /* "embedded" nodetree cases (i.e. scene/material/texture->nodetree) */
 #define ANIMDATA_NODETREE_IDS_CB(first, NtId_Type) \
-  for (id = first; id; id = id->next) { \
+  for (id = static_cast<ID *>(first); id; id = static_cast<ID *>(id->next)) { \
     AnimData *adt = BKE_animdata_from_id(id); \
     NtId_Type *ntp = (NtId_Type *)id; \
     if (ntp->nodetree) { \
@@ -1344,7 +1344,7 @@ void BKE_animdata_fix_paths_rename_all_ex(Main *bmain,
    *   this outside of the function may make things slightly faster?
    */
 #define RENAMEFIX_ANIM_IDS(first) \
-  for (id = first; id; id = id->next) { \
+  for (id = static_cast<ID *>(first); id; id = static_cast<ID *>(id->next)) { \
     AnimData *adt = BKE_animdata_from_id(id); \
     BKE_animdata_fix_paths_rename( \
         id, adt, ref_id, prefix, oldName, newName, oldSubscript, newSubscript, verify_paths); \
@@ -1353,7 +1353,7 @@ void BKE_animdata_fix_paths_rename_all_ex(Main *bmain,
 
   /* another version of this macro for nodetrees */
 #define RENAMEFIX_ANIM_NODETREE_IDS(first, NtId_Type) \
-  for (id = first; id; id = id->next) { \
+  for (id = static_cast<ID *>(first); id; id = static_cast<ID *>(id->next)) { \
     AnimData *adt = BKE_animdata_from_id(id); \
     NtId_Type *ntp = (NtId_Type *)id; \
     if (ntp->nodetree) { \
