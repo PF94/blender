@@ -6,8 +6,8 @@
  * Mirror/Symmetry functions applying to actions.
  */
 
-#include <math.h>
-#include <string.h>
+#include <cmath>
+#include <cstring>
 
 #include "MEM_guardedalloc.h"
 
@@ -56,7 +56,7 @@
  */
 struct FCurve_KeyCache {
   /**
-   * When NULL, ignore this channel.
+   * When nullptr, ignore this channel.
    */
   FCurve *fcurve;
   /**
@@ -64,7 +64,7 @@ struct FCurve_KeyCache {
    */
   float *fcurve_eval;
   /**
-   * Cached #FCurve.bezt values, NULL when no key-frame exists on this frame.
+   * Cached #FCurve.bezt values, nullptr when no key-frame exists on this frame.
    *
    * \note The case where two keyframes round to the same frame isn't supported.
    * In this case only the first will be used.
@@ -94,7 +94,7 @@ static void action_flip_pchan_cache_fcurve_assign_array(struct FCurve_KeyCache *
                                                         const char *path,
                                                         struct FCurvePathCache *fcache)
 {
-  FCurve **fcurves = alloca(sizeof(*fcurves) * fkc_len);
+  FCurve **fcurves = static_cast<FCurve**>(alloca(sizeof(*fcurves) * fkc_len));
   if (BKE_fcurve_pathcache_find_array(fcache, path, fcurves, fkc_len)) {
     for (int i = 0; i < fkc_len; i++) {
       if (fcurves[i] && fcurves[i]->bezt) {
@@ -115,20 +115,21 @@ static void action_flip_pchan_cache_init(struct FCurve_KeyCache *fkc,
                                          const float *keyed_frames,
                                          int keyed_frames_len)
 {
-  BLI_assert(fkc->fcurve != NULL);
+  BLI_assert(fkc->fcurve != nullptr);
 
   /* Cache the F-Curve values for `keyed_frames`. */
   const int fcurve_flag = fkc->fcurve->flag;
   fkc->fcurve->flag |= FCURVE_MOD_OFF;
-  fkc->fcurve_eval = MEM_mallocN(sizeof(float) * keyed_frames_len, __func__);
+  fkc->fcurve_eval = static_cast<float *>(MEM_mallocN(sizeof(float) * keyed_frames_len, __func__));
   for (int frame_index = 0; frame_index < keyed_frames_len; frame_index++) {
     const float evaltime = keyed_frames[frame_index];
     fkc->fcurve_eval[frame_index] = evaluate_fcurve_only_curve(fkc->fcurve, evaltime);
   }
   fkc->fcurve->flag = fcurve_flag;
 
-  /* Cache the #BezTriple for `keyed_frames`, or leave as NULL. */
-  fkc->bezt_array = MEM_mallocN(sizeof(*fkc->bezt_array) * keyed_frames_len, __func__);
+  /* Cache the #BezTriple for `keyed_frames`, or leave as nullptr. */
+  fkc->bezt_array = static_cast<BezTriple **>(
+      MEM_mallocN(sizeof(*fkc->bezt_array) * keyed_frames_len, __func__));
   BezTriple *bezt = fkc->fcurve->bezt;
   BezTriple *bezt_end = fkc->fcurve->bezt + fkc->fcurve->totvert;
 
@@ -137,7 +138,7 @@ static void action_flip_pchan_cache_init(struct FCurve_KeyCache *fkc,
     const float evaltime = keyed_frames[frame_index];
     const float bezt_time = roundf(bezt->vec[1][0]);
     if (bezt_time > evaltime) {
-      fkc->bezt_array[frame_index++] = NULL;
+      fkc->bezt_array[frame_index++] = nullptr;
     }
     else {
       if (bezt_time == evaltime) {
@@ -151,7 +152,7 @@ static void action_flip_pchan_cache_init(struct FCurve_KeyCache *fkc,
   }
   /* Clear remaining unset keyed_frames (if-any). */
   while (frame_index < keyed_frames_len) {
-    fkc->bezt_array[frame_index++] = NULL;
+    fkc->bezt_array[frame_index++] = nullptr;
   }
 }
 
@@ -165,14 +166,14 @@ static void action_flip_pchan(Object *ob_arm,
   /* Use a fixed buffer size as it's known this can only be at most:
    * `pose.bones["{MAXBONENAME}"].rotation_quaternion`. */
   char path_xform[256];
-  char pchan_name_esc[sizeof(((bActionChannel *)NULL)->name) * 2];
+  char pchan_name_esc[sizeof(((bActionChannel *)nullptr)->name) * 2];
   BLI_str_escape(pchan_name_esc, pchan->name, sizeof(pchan_name_esc));
   const int path_xform_prefix_len = SNPRINTF(path_xform, "pose.bones[\"%s\"]", pchan_name_esc);
   char *path_xform_suffix = path_xform + path_xform_prefix_len;
   const int path_xform_suffix_maxncpy = sizeof(path_xform) - path_xform_prefix_len;
 
   /* Lookup and assign all available #FCurve channels,
-   * unavailable channels are left NULL. */
+   * unavailable channels are left nullptr. */
 
   /**
    * Structure to store transformation F-Curves corresponding to a pose bones transformation.
@@ -188,7 +189,7 @@ static void action_flip_pchan(Object *ob_arm,
    */
   struct {
     struct FCurve_KeyCache loc[3], eul[3], quat[4], rotAxis[3], rotAngle, size[3], rotmode;
-  } fkc_pchan = {{{NULL}}};
+  } fkc_pchan = {{{nullptr}}};
 
 #define FCURVE_ASSIGN_VALUE(id, path_test_suffix, index) \
   BLI_strncpy(path_xform_suffix, path_test_suffix, path_xform_suffix_maxncpy); \
@@ -217,7 +218,7 @@ static void action_flip_pchan(Object *ob_arm,
 
   for (int chan = 0; chan < FCURVE_CHANNEL_LEN; chan++) {
     struct FCurve_KeyCache *fkc = (struct FCurve_KeyCache *)(&fkc_pchan) + chan;
-    if (fkc->fcurve != NULL) {
+    if (fkc->fcurve != nullptr) {
       fcurve_array[fcurve_array_len++] = fkc->fcurve;
     }
   }
@@ -235,7 +236,7 @@ static void action_flip_pchan(Object *ob_arm,
   /* Initialize the pose channel curve cache from the F-Curve. */
   for (int chan = 0; chan < FCURVE_CHANNEL_LEN; chan++) {
     struct FCurve_KeyCache *fkc = (struct FCurve_KeyCache *)(&fkc_pchan) + chan;
-    if (fkc->fcurve == NULL) {
+    if (fkc->fcurve == nullptr) {
       continue;
     }
     action_flip_pchan_cache_init(fkc, keyed_frames, keyed_frames_len);
@@ -246,7 +247,7 @@ static void action_flip_pchan(Object *ob_arm,
   unit_m4(flip_mtx);
   flip_mtx[0][0] = -1;
 
-  bPoseChannel *pchan_flip = NULL;
+  bPoseChannel *pchan_flip = nullptr;
   char pchan_name_flip[MAXBONENAME];
   BLI_string_flip_side_name(pchan_name_flip, pchan->name, false, sizeof(pchan_name_flip));
   if (!STREQ(pchan_name_flip, pchan->name)) {
@@ -266,13 +267,13 @@ static void action_flip_pchan(Object *ob_arm,
 
     /* Load the values into the channel. */
 #define READ_VALUE_FLT(id) \
-  if (fkc_pchan.id.fcurve_eval != NULL) { \
+  if (fkc_pchan.id.fcurve_eval != nullptr) { \
     pchan_temp.id = fkc_pchan.id.fcurve_eval[frame_index]; \
   } \
   ((void)0)
 
 #define READ_VALUE_INT(id) \
-  if (fkc_pchan.id.fcurve_eval != NULL) { \
+  if (fkc_pchan.id.fcurve_eval != nullptr) { \
     pchan_temp.id = floorf(fkc_pchan.id.fcurve_eval[frame_index] + 0.5f); \
   } \
   ((void)0)
@@ -314,7 +315,7 @@ static void action_flip_pchan(Object *ob_arm,
      * This has only been observed with bones that can't be flipped,
      * hence the check for `pchan_flip`. */
     const float unit_x[3] = {1.0f, 0.0f, 0.0f};
-    const bool is_x_axis_orthogonal = (pchan_flip == NULL) &&
+    const bool is_x_axis_orthogonal = (pchan_flip == nullptr) &&
                                       (fabsf(dot_v3v3(pchan->bone->arm_mat[0], unit_x)) <= 1e-6f);
     if (is_x_axis_orthogonal) {
       /* Matrix needs to flip both the X and Z axes to come out right. */
@@ -331,9 +332,9 @@ static void action_flip_pchan(Object *ob_arm,
 
     /* Write the values back to the F-Curves. */
 #define WRITE_VALUE_FLT(id) \
-  if (fkc_pchan.id.fcurve_eval != NULL) { \
+  if (fkc_pchan.id.fcurve_eval != nullptr) { \
     BezTriple *bezt = fkc_pchan.id.bezt_array[frame_index]; \
-    if (bezt != NULL) { \
+    if (bezt != nullptr) { \
       const float delta = pchan_temp.id - bezt->vec[1][1]; \
       bezt->vec[0][1] += delta; \
       bezt->vec[1][1] += delta; \
@@ -363,7 +364,7 @@ static void action_flip_pchan(Object *ob_arm,
 
   /* Recalculate handles. */
   for (int i = 0; i < fcurve_array_len; i++) {
-    BKE_fcurve_handles_recalc_ex(fcurve_array[i], 0);
+    BKE_fcurve_handles_recalc_ex(fcurve_array[i], static_cast<eBezTriple_Flag>(0));
   }
 
   MEM_freeN((void *)keyed_frames);
@@ -401,7 +402,7 @@ static void action_flip_pchan_rna_paths(struct bAction *act)
     const char *name_esc_end = BLI_str_escape_find_quote(name_esc);
 
     /* While unlikely, an RNA path could be malformed. */
-    if (UNLIKELY(name_esc_end == NULL)) {
+    if (UNLIKELY(name_esc_end == nullptr)) {
       continue;
     }
 
@@ -425,7 +426,7 @@ static void action_flip_pchan_rna_paths(struct bAction *act)
       MEM_freeN(fcu->rna_path);
       fcu->rna_path = path_flip;
 
-      if (fcu->grp != NULL) {
+      if (fcu->grp != nullptr) {
         fcu->grp->flag |= AGRP_TEMP;
       }
     }

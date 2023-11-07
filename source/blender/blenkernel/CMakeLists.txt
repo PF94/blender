@@ -57,13 +57,13 @@ set(SRC
   intern/CCGSubSurf_legacy.c
   intern/CCGSubSurf_util.c
   intern/DerivedMesh.cc
-        intern/action.cc
+  intern/action.cc
   intern/action_bones.cc
-  intern/action_mirror.c
-  intern/addon.c
-  intern/anim_data.c
-  intern/anim_path.c
-  intern/anim_sys.c
+  intern/action_mirror.cc
+  intern/addon.cc
+  intern/anim_data.cc
+  intern/anim_path.cc
+  intern/anim_sys.cc
   intern/anim_visualization.c
   intern/anonymous_attribute_id.cc
   intern/appdir.c
