@@ -89,7 +89,7 @@ static CLG_LogRef LOG = {"bke.action"};
  *
  * \param flag: Copying options (see BKE_lib_id.h's LIB_ID_COPY_... flags for more).
  */
-static void action_copy_data(Main /* UNUSED(bmain) */, ID *id_dst, const ID *id_src, const int flag)
+static void action_copy_data(Main * /* UNUSED(bmain) */, ID *id_dst, const ID *id_src, const int flag)
 {
   bAction *action_dst = (bAction *)id_dst;
   const bAction *action_src = (const bAction *)id_src;
