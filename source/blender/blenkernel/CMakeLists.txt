@@ -57,7 +57,7 @@ set(SRC
   intern/CCGSubSurf_legacy.c
   intern/CCGSubSurf_util.c
   intern/DerivedMesh.cc
-  intern/action.c
+        intern/action.cc
   intern/action_bones.cc
   intern/action_mirror.c
   intern/addon.c
@@ -78,7 +78,7 @@ set(SRC
   intern/attribute_access.cc
   intern/attribute_math.cc
   intern/autoexec.c
-  intern/blender.c
+  intern/blender.cc
   intern/blender_copybuffer.c
   intern/blender_undo.cc
   intern/blender_user_menu.c
