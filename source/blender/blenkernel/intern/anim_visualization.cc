@@ -26,7 +26,7 @@
 void animviz_settings_init(bAnimVizSettings *avs)
 {
   /* sanity check */
-  if (avs == NULL) {
+  if (avs == nullptr) {
     return;
   }
 
@@ -48,7 +48,7 @@ void animviz_settings_init(bAnimVizSettings *avs)
 void animviz_free_motionpath_cache(bMotionPath *mpath)
 {
   /* sanity check */
-  if (mpath == NULL) {
+  if (mpath == nullptr) {
     return;
   }
 
@@ -62,14 +62,14 @@ void animviz_free_motionpath_cache(bMotionPath *mpath)
   GPU_BATCH_DISCARD_SAFE(mpath->batch_points);
 
   /* reset the relevant parameters */
-  mpath->points = NULL;
+  mpath->points = nullptr;
   mpath->length = 0;
 }
 
 void animviz_free_motionpath(bMotionPath *mpath)
 {
   /* sanity check */
-  if (mpath == NULL) {
+  if (mpath == nullptr) {
     return;
   }
 
@@ -86,17 +86,17 @@ bMotionPath *animviz_copy_motionpath(const bMotionPath *mpath_src)
 {
   bMotionPath *mpath_dst;
 
-  if (mpath_src == NULL) {
-    return NULL;
+  if (mpath_src == nullptr) {
+    return nullptr;
   }
 
-  mpath_dst = MEM_dupallocN(mpath_src);
-  mpath_dst->points = MEM_dupallocN(mpath_src->points);
+  mpath_dst = static_cast<bMotionPath*>(MEM_dupallocN(mpath_src));
+  mpath_dst->points = static_cast<bMotionPathVert*>(MEM_dupallocN(mpath_src->points));
 
   /* should get recreated on draw... */
-  mpath_dst->points_vbo = NULL;
-  mpath_dst->batch_line = NULL;
-  mpath_dst->batch_points = NULL;
+  mpath_dst->points_vbo = nullptr;
+  mpath_dst->batch_line = nullptr;
+  mpath_dst->batch_points = nullptr;
 
   return mpath_dst;
 }
@@ -112,8 +112,8 @@ bMotionPath *animviz_verify_motionpaths(ReportList *reports,
   bMotionPath *mpath, **dst;
 
   /* sanity checks */
-  if (ELEM(NULL, scene, ob)) {
-    return NULL;
+  if (ELEM(nullptr, scene, ob)) {
+    return nullptr;
   }
 
   /* get destination data */
@@ -137,13 +137,13 @@ bMotionPath *animviz_verify_motionpaths(ReportList *reports,
                 avs->path_sf,
                 avs->path_ef,
                 (avs->path_sf == avs->path_ef) ? TIP_(", cannot have single-frame paths") : "");
-    return NULL;
+    return nullptr;
   }
 
   /* if there is already a motionpath, just return that,
    * provided its settings are ok (saves extra free+alloc)
    */
-  if (*dst != NULL) {
+  if (*dst != nullptr) {
     int expected_length = avs->path_ef - avs->path_sf;
 
     mpath = *dst;
@@ -164,7 +164,7 @@ bMotionPath *animviz_verify_motionpaths(ReportList *reports,
   }
   else {
     /* create a new motionpath, and assign it */
-    mpath = MEM_callocN(sizeof(bMotionPath), "bMotionPath");
+    mpath = static_cast<bMotionPath*>(MEM_callocN(sizeof(bMotionPath), "bMotionPath"));
     *dst = mpath;
   }
 
@@ -190,7 +190,8 @@ bMotionPath *animviz_verify_motionpaths(ReportList *reports,
   mpath->flag |= MOTIONPATH_FLAG_LINES; /* draw lines by default */
 
   /* allocate a cache */
-  mpath->points = MEM_callocN(sizeof(bMotionPathVert) * mpath->length, "bMotionPathVerts");
+  mpath->points = static_cast<bMotionPathVert*>
+      (MEM_callocN(sizeof(bMotionPathVert) * mpath->length, "bMotionPathVerts"));
 
   /* tag viz settings as currently having some path(s) which use it */
   avs->path_bakeflag |= MOTIONPATH_BAKE_HAS_PATHS;
@@ -202,7 +203,7 @@ bMotionPath *animviz_verify_motionpaths(ReportList *reports,
 void animviz_motionpath_blend_write(BlendWriter *writer, bMotionPath *mpath)
 {
   /* sanity checks */
-  if (mpath == NULL) {
+  if (mpath == nullptr) {
     return;
   }
 
@@ -216,14 +217,14 @@ void animviz_motionpath_blend_write(BlendWriter *writer, bMotionPath *mpath)
 void animviz_motionpath_blend_read_data(BlendDataReader *reader, bMotionPath *mpath)
 {
   /* sanity check */
-  if (mpath == NULL) {
+  if (mpath == nullptr) {
     return;
   }
 
   /* relink points cache */
   BLO_read_data_address(reader, &mpath->points);
 
-  mpath->points_vbo = NULL;
-  mpath->batch_line = NULL;
-  mpath->batch_points = NULL;
+  mpath->points_vbo = nullptr;
+  mpath->batch_line = nullptr;
+  mpath->batch_points = nullptr;
 }
