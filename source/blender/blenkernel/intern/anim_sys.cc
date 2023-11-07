@@ -4009,7 +4009,7 @@ void BKE_animsys_evaluate_all_animation(Main *main, Depsgraph *depsgraph, float 
    *   this outside of the function may make things slightly faster?
    */
 #define EVAL_ANIM_IDS(first, aflag) \
-  for (id = first; id; id = id->next) { \
+  for (id = static_cast<ID *>(first); id; id = static_cast<ID *>(id->next)) { \
     if (ID_REAL_USERS(id) > 0) { \
       AnimData *adt = BKE_animdata_from_id(id); \
       BKE_animsys_evaluate_animdata(id, adt, &anim_eval_context, aflag, flush_to_original); \
@@ -4024,7 +4024,7 @@ void BKE_animsys_evaluate_all_animation(Main *main, Depsgraph *depsgraph, float 
    * - 'ntp' stands for "node tree parent" = data-block where node tree stuff resides
    */
 #define EVAL_ANIM_NODETREE_IDS(first, NtId_Type, aflag) \
-  for (id = first; id; id = id->next) { \
+  for (id = static_cast<ID *>(first); id; id = static_cast<ID *>(id->next)) { \
     if (ID_REAL_USERS(id) > 0) { \
       AnimData *adt = BKE_animdata_from_id(id); \
       NtId_Type *ntp = (NtId_Type *)id; \
